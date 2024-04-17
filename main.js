@@ -13,17 +13,41 @@ class Person {
 }
 const persons = new Person();
 const programmStart = async (persons) => {
-    console.log("welcome");
-    const ans = await inquirer.prompt({
-        type: "list",
-        name: "select",
-        message: "how can i help you ?",
-        choices: ["staff", "teacher",]
-    });
-    if (ans.select == "staff") {
-        console.log("you can go to the staff room.");
-        console.log("but, first you have to take permission");
-    }
-    if (ans.select == "teacher") { }
+    let exitProgram = false;
+    do {
+        console.log("Welcome");
+        const ans = await inquirer.prompt({
+            type: "list",
+            name: "select",
+            message: "With whom would you prefer to converse?",
+            choices: ["staff", "student", "exit"]
+        });
+        if (ans.select === "staff") {
+            console.log("You can go to the staff room.");
+            console.log("But first, you have to take permission.");
+        }
+        else if (ans.select === "student") {
+            const studentAns = await inquirer.prompt({
+                type: "input",
+                name: "student",
+                message: "Which student would you like to engage in conversation with?"
+            });
+            const student = persons.students.find(val => val.name === studentAns.student);
+            if (!student) {
+                const newStudent = new Student(studentAns.student);
+                persons.addStudent(newStudent);
+                console.log(`Hello, I am ${newStudent.name} or I am fine.`);
+                console.log(persons.students);
+            }
+            else {
+                console.log(`Hello, I am ${student.name} or I am fine.`);
+                console.log(persons.students);
+            }
+        }
+        else if (ans.select === "exit") {
+            console.log("Exiting program...");
+            exitProgram = true;
+        }
+    } while (!exitProgram);
 };
 programmStart(persons);
