@@ -1,63 +1,62 @@
 import inquirer from "inquirer";
 
 class Student {
-    name:string
-    constructor(n:string){
-        this.name = n 
+    name: string
+    constructor(n: string) {
+        this.name = n
     }
 }
 
-
-
-class Person{
+class Person {
     students:
-    Student[]=[]
+        Student[] = []
 
 
-    addStudent(obj:Student){
+    addStudent(obj: Student) {
         this.students.push(obj)
     }
 }
 const persons = new Person()
 
 
-const programmStart = async(persons:Person)=>{
-  do{  console.log("welcome")
+const programmStart = async (persons: Person) => {
+    let exitProgram = false;
 
-  const ans = await inquirer.prompt({
-      type:"list",
-      name:"select",
-      message:"With whom would you prefer to converse?",
-      choices:["staff","student",]
-  })
+    do {
+        console.log("Welcome");
 
-  if(ans.select=="staff"){
-      console.log("you can go to the staff room.")
-      console.log("but, first you have to take permission")
-  }
-  if(ans.select=="student"){
-      const ans = await inquirer.prompt({
-          type:"input",
-          name:"student",
-          message:"To which student would you like to engage in conversation?"
-      })
+        const ans = await inquirer.prompt({
+            type: "list",
+            name: "select",
+            message: "With whom would you prefer to converse?",
+            choices: ["staff", "student", "exit"]
+        });
 
-      const student = persons.students.find(val => val.name == ans.student)
-      if(!student){
-          const name = new Student(ans.student)
-          persons.addStudent(name)
+        if (ans.select === "staff") {
+            console.log("You can go to the staff room.");
+            console.log("But first, you have to take permission.");
+        } else if (ans.select === "student") {
+            const studentAns = await inquirer.prompt({
+                type: "input",
+                name: "student",
+                message: "Which student would you like to engage in conversation with?"
+            });
 
+            const student = persons.students.find(val => val.name === studentAns.student);
+            if (!student) {
+                const newStudent = new Student(studentAns.student);
+                persons.addStudent(newStudent);
+                console.log(`Hello, I am ${newStudent.name} or I am fine.`);
+                console.log(persons.students);
+            } else {
+                console.log(`Hello, I am ${student.name} or I am fine.`);
+                console.log(persons.students);
+            }
+        } else if (ans.select === "exit") {
+            console.log("Exiting program...");
+            exitProgram = true;
+        }
 
-          console.log(`hello i am ${name.name},or i am fine`)
-          console.log(persons.students)
-      }
-       
-      if(student){
-          console.log(`hello i am ${student.name  },or i am fine`)
-          console.log(persons.students)
-      }
-   }}
-  while(true)
-
+    } while (!exitProgram);
 }
 programmStart(persons)
